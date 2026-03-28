@@ -1,9 +1,15 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { Dashboard } from "./pages/Dashboard";
 
 export default function App() {
   return (
-    <Layout>
-      <p className="text-gray-500">Dashboard coming soon...</p>
-    </Layout>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
