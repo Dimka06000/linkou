@@ -13,3 +13,9 @@ export async function fetchRecentRepos(): Promise<Repo[]> {
   if (!res.ok) return [];
   return res.json();
 }
+
+export async function fetchRepoCommits(repo: string): Promise<any[]> {
+  const res = await fetch(`/api/github?type=commits&repo=${repo}`);
+  if (!res.ok) return [];
+  return res.json();
+}
