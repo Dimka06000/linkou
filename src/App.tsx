@@ -6,6 +6,8 @@ import { Boards } from "./pages/Boards";
 import { Settings } from "./pages/Settings";
 import { Auth } from "./pages/Auth";
 import { SharedBoard } from "./pages/SharedBoard";
+import { LinksCategory } from "./pages/LinksCategory";
+import { Integrations } from "./pages/Integrations";
 
 export default function App() {
   return (
@@ -20,6 +22,8 @@ export default function App() {
               <Route path="/boards" element={<Boards />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/login" element={<Auth />} />
+              <Route path="/links/:categoryId" element={<LinksCategory />} />
+              <Route path="/integrations" element={<Integrations />} />
             </Routes>
           </AppShell>
         } />
