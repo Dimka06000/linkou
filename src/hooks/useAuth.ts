@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { isSaasMode } from "./useFeature";
 import type { User } from "@supabase/supabase-js";
 
 export function useAuth() {
@@ -8,7 +7,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isSaasMode() || !supabase) {
+    if (!supabase) {
       setLoading(false);
       return;
     }
