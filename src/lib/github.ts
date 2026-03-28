@@ -1,4 +1,4 @@
-interface Repo {
+export interface Repo {
   name: string;
   url: string;
   description: string;
@@ -8,14 +8,18 @@ interface Repo {
   isPrivate: boolean;
 }
 
-export async function fetchRecentRepos(): Promise<Repo[]> {
-  const res = await fetch("/api/github?type=repos");
+export async function fetchRecentRepos(userId?: string): Promise<Repo[]> {
+  const params = new URLSearchParams({ type: "repos" });
+  if (userId) params.set("userId", userId);
+  const res = await fetch(`/api/github?${params}`);
   if (!res.ok) return [];
   return res.json();
 }
 
-export async function fetchRepoCommits(repo: string): Promise<any[]> {
-  const res = await fetch(`/api/github?type=commits&repo=${repo}`);
+export async function fetchRepoCommits(repo: string, userId?: string): Promise<any[]> {
+  const params = new URLSearchParams({ type: "commits", repo });
+  if (userId) params.set("userId", userId);
+  const res = await fetch(`/api/github?${params}`);
   if (!res.ok) return [];
   return res.json();
 }

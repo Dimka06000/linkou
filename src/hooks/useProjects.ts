@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import { fetchRecentRepos } from "../lib/github";
 import { fetchDeployments } from "../lib/vercel-api";
 import { fetchRailwayServices } from "../lib/railway-api";
+import { useAuth } from "./useAuth";
 import type { Project } from "../types";
 
 export function useProjects() {
+  const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       const [repos, deployments, railwayServices] = await Promise.all([
-        fetchRecentRepos(),
+        fetchRecentRepos(user?.id),
         fetchDeployments(),
         fetchRailwayServices(),
       ]);
@@ -36,7 +38,7 @@ export function useProjects() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [user]);
 
   return { projects, loading };
 }
