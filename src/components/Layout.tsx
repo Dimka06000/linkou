@@ -36,6 +36,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
               >
                 Stats
               </NavLink>
+              <NavLink
+                to="/boards"
+                className={({ isActive }) =>
+                  `text-sm px-3 py-1.5 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-indigo-500/20 text-indigo-400"
+                      : "text-gray-400 hover:text-gray-200 hover:bg-[#1e1e1e]"
+                  }`
+                }
+              >
+                Boards
+              </NavLink>
             </nav>
           </div>
           <SearchBar />
