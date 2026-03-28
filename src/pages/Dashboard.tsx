@@ -3,11 +3,14 @@ import type { Category, Link } from "../types";
 import { loadCategories, saveClick } from "../lib/storage";
 import { PinnedSection } from "../components/PinnedSection";
 import { CategorySection } from "../components/CategorySection";
+import { GitHubWidget } from "../components/GitHubWidget";
+import { useFeature } from "../hooks/useFeature";
 import { useAppStore } from "../store";
 
 export function Dashboard() {
   const [categories, setCategories] = useState<Category[]>([]);
   const searchQuery = useAppStore((s) => s.searchQuery);
+  const githubEnabled = useFeature("github");
 
   useEffect(() => {
     loadCategories().then(setCategories);
@@ -41,6 +44,7 @@ export function Dashboard() {
 
   return (
     <>
+      {githubEnabled && <GitHubWidget />}
       <PinnedSection categories={categories} onTogglePin={handleTogglePin} onLinkClick={handleLinkClick} />
       {categories.map((cat) => (
         <CategorySection key={cat.id} category={cat} onTogglePin={handleTogglePin} onLinkClick={handleLinkClick} />
