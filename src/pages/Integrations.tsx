@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 const INTEGRATIONS = [
   { id: "google", name: "Google Calendar", icon: "📅", description: "Sync tes rdv Google", status: "oauth" as const },
   { id: "outlook", name: "Outlook", icon: "📧", description: "Sync tes rdv Outlook", status: "oauth" as const },
-  { id: "github", name: "GitHub", icon: "🐙", description: "Repos et commits", status: "available" as const },
+  { id: "github", name: "GitHub", icon: "🐙", description: "Repos et commits", status: "oauth" as const },
   { id: "vercel", name: "Vercel", icon: "▲", description: "Status des deployments", status: "available" as const },
   { id: "railway", name: "Railway", icon: "🚂", description: "Services et logs", status: "available" as const },
   { id: "elevenlabs", name: "ElevenLabs", icon: "🔊", description: "Briefing vocal", status: "coming" as const },
