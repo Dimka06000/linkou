@@ -3,6 +3,7 @@ import { Layout } from "./components/Layout";
 import { Dashboard } from "./pages/Dashboard";
 import { Stats } from "./pages/Stats";
 import { Boards } from "./pages/Boards";
+import { Settings } from "./pages/Settings";
 import { SharedBoard } from "./pages/SharedBoard";
 import { Auth } from "./pages/Auth";
 import { useAuth } from "./hooks/useAuth";
@@ -50,6 +51,14 @@ function AppRoutes() {
         element={
           <Layout>
             <Boards />
+          </Layout>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <Layout>
+            <Settings />
           </Layout>
         }
       />
