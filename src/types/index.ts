@@ -38,3 +38,45 @@ export interface ThemeConfig {
   accentColor: string;
   surfaceColor: string;
 }
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  location?: string;
+  source: "google" | "outlook";
+  tag?: string;
+  travelTime?: number;
+  travelMode?: string;
+}
+
+export interface Project {
+  name: string;
+  repoUrl: string;
+  prodUrl: string;
+  platform: "vercel" | "railway";
+  lastCommit: {
+    message: string;
+    date: string;
+    author: string;
+  };
+  deployStatus: "ready" | "building" | "error" | "unknown";
+  deployDate: string;
+}
+
+export interface Briefing {
+  greeting: string;
+  summary: string;
+  events: number;
+  trades?: { pnl: number; open: number };
+  health?: { score: number };
+  expenses?: { total: number; budget: number };
+  nextEvent?: { title: string; travelMinutes: number; departIn: number };
+}
+
+export interface Integration {
+  provider: string;
+  connected: boolean;
+  expiresAt?: string;
+}
