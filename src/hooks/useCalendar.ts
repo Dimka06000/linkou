@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
 import type { CalendarEvent } from "../types";
 
-export function useCalendar(startDate: string, endDate?: string) {
+export function useCalendar(startDate: string, endDate?: string, refreshSeed?: number) {
   const { user } = useAuth();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export function useCalendar(startDate: string, endDate?: string) {
       .then((r) => r.ok ? r.json() : [])
       .then(setEvents)
       .finally(() => setLoading(false));
-  }, [startDate, end, user]);
+  }, [startDate, end, user, refreshSeed]);
 
   return { events, loading };
 }

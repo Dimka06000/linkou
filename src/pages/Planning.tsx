@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useCalendar } from "../hooks/useCalendar";
+import { useAuth } from "../hooks/useAuth";
+import { createCalendarEvent } from "../lib/calendar";
 import type { CalendarEvent } from "../types";
 
 type View = "jour" | "semaine";
@@ -40,6 +42,15 @@ function timeToY(isoOrTime: string): number {
     [h, m] = isoOrTime.split(":").map(Number);
   }
   return (h - START_HOUR) * HOUR_HEIGHT + (m / 60) * HOUR_HEIGHT;
+}
+
+/** Convert a Y offset in the grid to a { hour, minutes } */
+function yToTime(y: number): { hour: number; minutes: number } {
+  const totalMins = (y / HOUR_HEIGHT) * 60;
+  const snapped = Math.round(totalMins / 15) * 15; // snap to 15min
+  const hour = Math.min(END_HOUR - 1, Math.max(START_HOUR, START_HOUR + Math.floor(snapped / 60)));
+  const minutes = snapped % 60;
+  return { hour, minutes };
 }
 
 function eventHeight(start: string, end: string): number {
@@ -121,12 +132,36 @@ interface EventDetailModal {
   y: number;
 }
 
+interface CreateEventModal {
+  dateStr: string; // YYYY-MM-DD
+  startTime: string; // HH:MM
+  endTime: string;   // HH:MM
+}
+
+function toLocalISOString(dateStr: string, timeStr: string): string {
+  // Returns something like "2024-03-28T14:30:00"
+  return `${dateStr}T${timeStr}:00`;
+}
+
 export function Planning() {
   const [view, setView] = useState<View>("semaine");
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [modal, setModal] = useState<EventDetailModal | null>(null);
   const [nowY, setNowY] = useState(currentTimeY);
+  const [refreshSeed, setRefreshSeed] = useState(0);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // Create event modal state
+  const [createModal, setCreateModal] = useState<CreateEventModal | null>(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [newStartTime, setNewStartTime] = useState("09:00");
+  const [newEndTime, setNewEndTime] = useState("10:00");
+  const [newLocation, setNewLocation] = useState("");
+  const [newTarget, setNewTarget] = useState<"google" | "outlook">("google");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const { user } = useAuth();
 
   // Week range
   const weekStart = getWeekStart(selectedDate);
@@ -139,7 +174,7 @@ export function Planning() {
   const startStr = view === "semaine" ? toDateStr(weekStart) : dayStart;
   const endStr = view === "semaine" ? toDateStr(weekEnd) : dayStart;
 
-  const { events, loading } = useCalendar(startStr, endStr);
+  const { events, loading } = useCalendar(startStr, endStr, refreshSeed);
 
   // Update current time every minute
   useEffect(() => {
@@ -171,6 +206,77 @@ export function Planning() {
     setModal({ event, x: rect.left, y: rect.top });
   }
 
+  function openCreateModal(dateStr: string, startTime: string) {
+    const [h, m] = startTime.split(":").map(Number);
+    const endH = h + 1 >= END_HOUR ? END_HOUR - 1 : h + 1;
+    const endTime = `${String(endH).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    setNewTitle("");
+    setNewStartTime(startTime);
+    setNewEndTime(endTime);
+    setNewLocation("");
+    setNewTarget("google");
+    setCreateError(null);
+    setCreateModal({ dateStr, startTime, endTime });
+    setModal(null);
+  }
+
+  function openCreateModalManual() {
+    const now = new Date();
+    const h = now.getHours();
+    const m = Math.round(now.getMinutes() / 15) * 15 % 60;
+    const startTime = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    const endH = h + 1 >= END_HOUR ? END_HOUR - 1 : h + 1;
+    const endTime = `${String(endH).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    const dateStr = toDateStr(new Date());
+    setNewTitle("");
+    setNewStartTime(startTime);
+    setNewEndTime(endTime);
+    setNewLocation("");
+    setNewTarget("google");
+    setCreateError(null);
+    setCreateModal({ dateStr, startTime, endTime });
+    setModal(null);
+  }
+
+  function handleGridClick(e: React.MouseEvent<HTMLDivElement>, day: Date) {
+    // Don't trigger if clicking an event
+    if ((e.target as HTMLElement).closest("[data-event]")) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const y = e.clientY - rect.top + (gridRef.current?.scrollTop || 0);
+    const { hour, minutes } = yToTime(y);
+    const startTime = `${String(hour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    openCreateModal(toDateStr(day), startTime);
+  }
+
+  async function handleCreateSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user || !createModal || !newTitle.trim()) return;
+
+    setCreating(true);
+    setCreateError(null);
+
+    const start = toLocalISOString(createModal.dateStr, newStartTime);
+    const end = toLocalISOString(createModal.dateStr, newEndTime);
+
+    const result = await createCalendarEvent({
+      userId: user.id,
+      title: newTitle.trim(),
+      start,
+      end,
+      location: newLocation.trim() || undefined,
+      target: newTarget,
+    });
+
+    setCreating(false);
+
+    if (result.success) {
+      setCreateModal(null);
+      setRefreshSeed((k) => k + 1); // trigger re-fetch
+    } else {
+      setCreateError(result.error || "Erreur lors de la création");
+    }
+  }
+
   const todayStr = new Date().toDateString();
   const nowVisible = nowY >= 0 && nowY <= TOTAL_HEIGHT;
 
@@ -181,7 +287,7 @@ export function Planning() {
   const dayEvents = events.filter((e) => isSameDay(e.start, selectedDate));
 
   return (
-    <div className="flex flex-col h-full" onClick={() => setModal(null)}>
+    <div className="flex flex-col h-full" onClick={() => { setModal(null); }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3 flex-shrink-0">
         <div className="flex items-center gap-2">
@@ -219,6 +325,13 @@ export function Planning() {
               </button>
             ))}
           </div>
+          {/* Add event button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); openCreateModalManual(); }}
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition-colors text-lg font-light leading-none"
+            title="Nouvel événement">
+            +
+          </button>
         </div>
       </div>
 
@@ -274,8 +387,9 @@ export function Planning() {
 
                 return (
                   <div key={di}
-                    className={`flex-1 relative border-l border-[#1e1e1e] ${today ? "bg-indigo-500/5" : ""}`}
-                    style={{ height: TOTAL_HEIGHT }}>
+                    className={`flex-1 relative border-l border-[#1e1e1e] cursor-pointer ${today ? "bg-indigo-500/5" : ""}`}
+                    style={{ height: TOTAL_HEIGHT }}
+                    onClick={(e) => handleGridClick(e, day)}>
                     {/* Hour lines */}
                     {HOURS.map((h) => (
                       <div key={h} className="absolute left-0 right-0 border-t border-[#1e1e1e]"
@@ -307,6 +421,7 @@ export function Planning() {
 
                       return (
                         <div key={event.id}
+                          data-event="true"
                           onClick={(e) => handleEventClick(e, event)}
                           className={`absolute rounded overflow-hidden cursor-pointer z-10 transition-opacity hover:opacity-90 ${
                             isGoogle
@@ -402,6 +517,122 @@ export function Planning() {
                 {modal.event.source === "google" ? "Google Calendar" : "Outlook"}
               </span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Event Modal */}
+      {createModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) setCreateModal(null); }}>
+          <div
+            className="bg-[#161616] border border-[#2a2a2a] rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-sm font-semibold text-gray-100">Nouvel événement</h3>
+              <button
+                onClick={() => setCreateModal(null)}
+                className="text-gray-500 hover:text-white text-sm transition-colors">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateSubmit} className="space-y-4">
+              {/* Title */}
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Titre *</label>
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="Réunion, rendez-vous..."
+                  autoFocus
+                  required
+                  className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-gray-100 placeholder-gray-600 outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
+
+              {/* Date */}
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Date</label>
+                <input
+                  type="date"
+                  value={createModal.dateStr}
+                  onChange={(e) => setCreateModal((m) => m ? { ...m, dateStr: e.target.value } : m)}
+                  className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
+
+              {/* Start / End time */}
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-500 mb-1.5">Début</label>
+                  <input
+                    type="time"
+                    value={newStartTime}
+                    onChange={(e) => setNewStartTime(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-500 mb-1.5">Fin</label>
+                  <input
+                    type="time"
+                    value={newEndTime}
+                    onChange={(e) => setNewEndTime(e.target.value)}
+                    className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Lieu (optionnel)</label>
+                <input
+                  type="text"
+                  value={newLocation}
+                  onChange={(e) => setNewLocation(e.target.value)}
+                  placeholder="Paris, Zoom..."
+                  className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-gray-100 placeholder-gray-600 outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
+
+              {/* Target calendar */}
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Calendrier</label>
+                <select
+                  value={newTarget}
+                  onChange={(e) => setNewTarget(e.target.value as "google" | "outlook")}
+                  className="w-full bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:border-indigo-500 transition-colors">
+                  <option value="google">Google Calendar</option>
+                  <option value="outlook">Outlook</option>
+                </select>
+              </div>
+
+              {/* Error */}
+              {createError && (
+                <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                  {createError}
+                </p>
+              )}
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setCreateModal(null)}
+                  className="text-sm text-gray-400 hover:text-white transition-colors">
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating || !newTitle.trim()}
+                  className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors">
+                  {creating ? "Création..." : "Créer"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
