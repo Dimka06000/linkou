@@ -1,57 +1,98 @@
 import { useEffect, useState } from "react";
 import type { Category, Link } from "../types";
 import { loadCategories, saveClick } from "../lib/storage";
-import { PinnedSection } from "../components/PinnedSection";
-import { CategorySection } from "../components/CategorySection";
-import { GitHubWidget } from "../components/GitHubWidget";
-import { useFeature } from "../hooks/useFeature";
-import { useAppStore } from "../store";
+import { BriefingCard } from "../components/BriefingCard";
+import { useAuth } from "../hooks/useAuth";
 
 export function Dashboard() {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
-  const searchQuery = useAppStore((s) => s.searchQuery);
-  const githubEnabled = useFeature("github");
 
   useEffect(() => {
-    loadCategories().then(setCategories);
-  }, []);
+    loadCategories(user?.id).then(setCategories);
+  }, [user]);
 
-  function handleTogglePin(linkId: string) {
-    setCategories((prev) =>
-      prev.map((cat) => ({
-        ...cat,
-        links: cat.links.map((l) =>
-          l.id === linkId ? { ...l, isPinned: !l.isPinned } : l
-        ),
-      }))
-    );
-    const pinned = JSON.parse(localStorage.getItem("linkou-pinned") || "{}");
-    pinned[linkId] = !pinned[linkId];
-    if (!pinned[linkId]) delete pinned[linkId];
-    localStorage.setItem("linkou-pinned", JSON.stringify(pinned));
-  }
+  const pinnedLinks = categories.flatMap((c) => c.links.filter((l) => l.isPinned));
+
+  const [topLinks, setTopLinks] = useState<Link[]>([]);
+  useEffect(() => {
+    const clicks = JSON.parse(localStorage.getItem("linkou-clicks") || "[]");
+    const countMap: Record<string, number> = {};
+    clicks.forEach((c: any) => { countMap[c.linkId] = (countMap[c.linkId] || 0) + 1; });
+    const allLinks = categories.flatMap((c) => c.links);
+    const sorted = allLinks.map((l) => ({ ...l, count: countMap[l.id] || 0 })).sort((a, b) => b.count - a.count).slice(0, 8);
+    setTopLinks(sorted);
+  }, [categories]);
 
   function handleLinkClick(link: Link) {
     const device = window.innerWidth < 768 ? "mobile" : "desktop";
     saveClick({ linkId: link.id, clickedAt: new Date().toISOString(), device });
   }
 
-  const hasResults = categories.some((cat) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return cat.links.some((l) => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
-  });
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon apres-midi" : "Bonsoir";
+  const briefing = {
+    greeting,
+    summary: `Tu as ${pinnedLinks.length} favoris et ${categories.reduce((s, c) => s + c.links.length, 0)} liens organises en ${categories.length} categories.`,
+    events: 0,
+  };
 
   return (
-    <>
-      {githubEnabled && <GitHubWidget />}
-      <PinnedSection categories={categories} onTogglePin={handleTogglePin} onLinkClick={handleLinkClick} />
-      {categories.map((cat) => (
-        <CategorySection key={cat.id} category={cat} onTogglePin={handleTogglePin} onLinkClick={handleLinkClick} />
-      ))}
-      {!hasResults && searchQuery && (
-        <p className="text-center text-gray-500 py-12">Aucun lien ne correspond a ta recherche.</p>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <BriefingCard briefing={briefing} />
+
+      {topLinks.length > 0 && (
+        <div className="col-span-full md:col-span-2 bg-[#161616] border border-[#1e1e1e] rounded-2xl p-5">
+          <h3 className="text-sm font-semibold mb-3 text-gray-300">Les plus utilises</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {topLinks.map((link) => {
+              const domain = (() => { try { return new URL(link.url).hostname; } catch { return ""; } })();
+              const favicon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : "";
+              return (
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link)}
+                  className="flex flex-col items-center gap-2 p-3 rounded-xl bg-[#1a1a1a] hover:bg-[#1e1e2e] border border-transparent hover:border-indigo-500/30 transition-all">
+                  {favicon && <img src={favicon} alt="" className="w-6 h-6 rounded" loading="lazy" />}
+                  <span className="text-xs text-center truncate w-full">{link.name}</span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
       )}
-    </>
+
+      {pinnedLinks.length > 0 && (
+        <div className="bg-[#161616] border border-[#1e1e1e] rounded-2xl p-5">
+          <h3 className="text-sm font-semibold mb-3 text-yellow-400">★ Favoris</h3>
+          <div className="space-y-1">
+            {pinnedLinks.slice(0, 6).map((link) => {
+              const domain = (() => { try { return new URL(link.url).hostname; } catch { return ""; } })();
+              return (
+                <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors">
+                  <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`} alt="" className="w-4 h-4" loading="lazy" />
+                  <span className="text-sm truncate">{link.name}</span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="bg-[#161616] border border-[#1e1e1e] rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold">📅 Aujourd'hui</h3>
+          <a href="/planning" className="text-xs text-indigo-400">Voir planning →</a>
+        </div>
+        <p className="text-sm text-gray-500">Connecte Google Calendar dans Integrations</p>
+      </div>
+
+      <div className="bg-[#161616] border border-[#1e1e1e] rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold">💻 Projets</h3>
+          <a href="/projets" className="text-xs text-indigo-400">Voir tout →</a>
+        </div>
+        <p className="text-sm text-gray-500">Connecte GitHub dans Integrations</p>
+      </div>
+    </div>
   );
 }
