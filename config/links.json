@@ -1,0 +1,207 @@
+[
+  {
+    "id": "cat-services",
+    "name": "Services perso & Admin",
+    "icon": "🏠",
+    "position": 0,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-ameli", "name": "Ameli", "url": "https://assure.ameli.fr/PortailAS/appmanager/PortailAS/assure?_nfpb=true&_pageLabel=as_accueil_page&_somtc=true", "isPinned": false, "position": 0 },
+      { "id": "link-edf", "name": "EDF", "url": "https://particulier.edf.fr/fr/accueil/espace-client/tableau-de-bord.html", "isPinned": false, "position": 1 },
+      { "id": "link-axa", "name": "AXA", "url": "https://espaceclient.axa.fr/#/", "isPinned": false, "position": 2 },
+      { "id": "link-navigo", "name": "Navigo", "url": "https://mon-espace.iledefrance-mobilites.fr/", "isPinned": false, "position": 3 },
+      { "id": "link-laposte", "name": "La Poste", "url": "https://www.laposte.fr/espaceclient/", "isPinned": false, "position": 4 },
+      { "id": "link-edocperso", "name": "eDocPerso", "url": "https://v2-app.edocperso.fr/", "isPinned": false, "position": 5 },
+      { "id": "link-doctolib", "name": "Doctolib", "url": "https://www.doctolib.fr/account/appointments", "isPinned": false, "position": 6 },
+      { "id": "link-edenred", "name": "Edenred", "url": "https://www.myedenred.fr/carte/7000605794/", "isPinned": false, "position": 7 },
+      { "id": "link-eurecia", "name": "Eurecia", "url": "https://plateforme.eurecia.com/eurecia/index.html#/dashboard", "isPinned": false, "position": 8 },
+      { "id": "link-easypara", "name": "Easypara", "url": "https://www.easypara.fr/customer/account/login/", "isPinned": false, "position": 9 },
+      { "id": "link-amazon", "name": "Amazon", "url": "https://www.amazon.fr/", "isPinned": false, "position": 10 },
+      { "id": "link-fnac", "name": "Fnac", "url": "https://www.fnac.com/", "isPinned": false, "position": 11 },
+      { "id": "link-louis-herboristerie", "name": "Louis Herboristerie", "url": "https://www.louis-herboristerie.com/mon-compte", "isPinned": false, "position": 12 },
+      { "id": "link-gmail", "name": "Gmail", "url": "https://mail.google.com/mail/u/0/?pli=1#inbox", "isPinned": false, "position": 13 }
+    ]
+  },
+  {
+    "id": "cat-finance",
+    "name": "Finance & Investissement",
+    "icon": "💰",
+    "position": 1,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-finary", "name": "Finary", "url": "https://app.finary.com/v2", "isPinned": false, "position": 0 },
+      { "id": "link-trade-republic", "name": "Trade Republic", "url": "https://app.traderepublic.com/portfolio?timeframe=1d", "isPinned": false, "position": 1 },
+      { "id": "link-boursorama", "name": "Boursorama", "url": "https://clients.boursobank.com/", "isPinned": false, "position": 2 },
+      { "id": "link-caption", "name": "Caption", "url": "https://app.caption.market/offers", "isPinned": false, "position": 3 },
+      { "id": "link-rallies-discover", "name": "Rallies (Discover)", "url": "https://rallies.ai/discover/fund/Soros%20Fund", "isPinned": false, "position": 4 },
+      { "id": "link-rallies-markets", "name": "Rallies (Markets)", "url": "https://rallies.ai/home/markets", "isPinned": false, "position": 5 },
+      { "id": "link-wise", "name": "Wise", "url": "https://wise.com/home", "isPinned": false, "position": 6 },
+      { "id": "link-epargne-bee2link", "name": "Epargne Bee2link", "url": "https://epargnant.ca-els.com/#/epargne", "isPinned": false, "position": 7 }
+    ]
+  },
+  {
+    "id": "cat-crypto",
+    "name": "Crypto",
+    "icon": "🪙",
+    "position": 2,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-legibloq", "name": "Legibloq", "url": "https://www.legibloq.fr/", "isPinned": false, "position": 0 },
+      { "id": "link-centrifuge-kraken", "name": "Centrifuge (Kraken)", "url": "https://www.kraken.com/fr/learn/what-is-centrifuge-cfg", "isPinned": false, "position": 1 },
+      { "id": "link-kamea-labs", "name": "Kamea Labs", "url": "https://www.kamealabs.com/fr", "isPinned": false, "position": 2 }
+    ]
+  },
+  {
+    "id": "cat-dev",
+    "name": "Dev & Monitoring",
+    "icon": "💻",
+    "position": 3,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-vercel-dashboard", "name": "Vercel Dashboard", "url": "https://vercel.com/dimis-projects-998fd45e", "isPinned": false, "position": 0 },
+      { "id": "link-railway-tips", "name": "Railway (Tips)", "url": "https://railway.com/project/78e3e200-6f4c-4808-96f8-289562f6c8cc?environmentId=ddc08926-0b71-4bba-a86f-e095a26464f7", "isPinned": false, "position": 1 },
+      { "id": "link-tips-platform", "name": "Tips Platform", "url": "https://trading-bot-six-topaz.vercel.app/theses", "badge": "prod", "isPinned": false, "position": 2 },
+      { "id": "link-github", "name": "GitHub", "url": "https://github.com/", "isPinned": false, "position": 3 },
+      { "id": "link-retool", "name": "Retool", "url": "https://dimitridesfray.retool.com/", "isPinned": false, "position": 4 }
+    ]
+  },
+  {
+    "id": "cat-product-design",
+    "name": "Product & Design Tools",
+    "icon": "🛠",
+    "position": 4,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-figma", "name": "Figma", "url": "https://www.figma.com/files/team/1269333105018384681/recents-and-sharing", "isPinned": false, "position": 0 },
+      { "id": "link-lucidchart", "name": "Lucidchart", "url": "https://lucid.app/documents#/home?folder_id=recent", "isPinned": false, "position": 1 },
+      { "id": "link-canva", "name": "Canva", "url": "https://www.canva.com/", "isPinned": false, "position": 2 },
+      { "id": "link-miro", "name": "Miro", "url": "https://miro.com/fr/", "isPinned": false, "position": 3 },
+      { "id": "link-loom", "name": "Loom", "url": "https://www.loom.com/", "isPinned": false, "position": 4 },
+      { "id": "link-scribe", "name": "Scribe", "url": "https://scribehow.com/", "isPinned": false, "position": 5 },
+      { "id": "link-mindmeister", "name": "MindMeister", "url": "https://www.mindmeister.com/fr", "isPinned": false, "position": 6 },
+      { "id": "link-uizard", "name": "Uizard", "url": "https://app.uizard.io/prototypes", "isPinned": false, "position": 7 },
+      { "id": "link-airtable", "name": "Airtable", "url": "https://airtable.com/", "isPinned": false, "position": 8 }
+    ]
+  },
+  {
+    "id": "cat-automation",
+    "name": "Automation & Data",
+    "icon": "⚙",
+    "position": 5,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-make", "name": "Make", "url": "https://eu2.make.com/organization/801099/dashboard", "isPinned": false, "position": 0 },
+      { "id": "link-n8n", "name": "n8n", "url": "https://n8n.io/", "isPinned": false, "position": 1 },
+      { "id": "link-coupler", "name": "Coupler", "url": "https://app.coupler.io/app/users", "isPinned": false, "position": 2 },
+      { "id": "link-streamlit-playground", "name": "Streamlit Playground", "url": "https://streamlit.io/playground?example=dataframes", "isPinned": false, "position": 3 },
+      { "id": "link-apidog", "name": "Apidog", "url": "https://apidog.com/apihub/", "isPinned": false, "position": 4 }
+    ]
+  },
+  {
+    "id": "cat-design-resources",
+    "name": "Design Resources",
+    "icon": "🎨",
+    "position": 6,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-uicolors", "name": "UIcolors", "url": "https://uicolors.app/create", "isPinned": false, "position": 0 },
+      { "id": "link-uigradients", "name": "uiGradients", "url": "https://uigradients.com/#VerBlack", "isPinned": false, "position": 1 },
+      { "id": "link-webflow", "name": "Webflow", "url": "https://webflow.com/login", "isPinned": false, "position": 2 }
+    ]
+  },
+  {
+    "id": "cat-freelance",
+    "name": "Freelance & Pro",
+    "icon": "👔",
+    "position": 7,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-malt", "name": "Malt", "url": "https://www.malt.fr/profile/dimitridesfray", "isPinned": false, "position": 0 },
+      { "id": "link-fair4b", "name": "Fair4b", "url": "https://app.fair4b.com/recherche_une_mission", "isPinned": false, "position": 1 },
+      { "id": "link-hostinger", "name": "Hostinger", "url": "https://hpanel.hostinger.com/", "isPinned": false, "position": 2 },
+      { "id": "link-linkedin", "name": "LinkedIn", "url": "https://www.linkedin.com/feed/", "isPinned": false, "position": 3 }
+    ]
+  },
+  {
+    "id": "cat-micro-entreprise",
+    "name": "Micro-entreprise",
+    "icon": "🏢",
+    "position": 8,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-urssaf", "name": "Urssaf", "url": "https://www.autoentrepreneur.urssaf.fr/portail/accueil.html", "isPinned": false, "position": 0 },
+      { "id": "link-france-travail", "name": "France Travail", "url": "https://candidat.francetravail.fr/inscription/validation/confirmation", "isPinned": false, "position": 1 }
+    ]
+  },
+  {
+    "id": "cat-news",
+    "name": "News & Veille",
+    "icon": "📰",
+    "position": 9,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-philomag", "name": "Philomag", "url": "https://boutique.philomag.com/abonnements/", "isPinned": false, "position": 0 },
+      { "id": "link-the-lancet", "name": "The Lancet", "url": "https://www.thelancet.com/", "isPinned": false, "position": 1 },
+      { "id": "link-courrier-international", "name": "Courrier International", "url": "https://www.courrierinternational.com/", "isPinned": false, "position": 2 }
+    ]
+  },
+  {
+    "id": "cat-formation",
+    "name": "Formation",
+    "icon": "🎓",
+    "position": 10,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-openclassrooms", "name": "OpenClassrooms", "url": "https://openclassrooms.com/fr/", "isPinned": false, "position": 0 },
+      { "id": "link-udemy", "name": "Udemy", "url": "https://www.udemy.com/", "isPinned": false, "position": 1 },
+      { "id": "link-tryhackme", "name": "TryHackMe", "url": "https://tryhackme.com/dashboard", "isPinned": false, "position": 2 },
+      { "id": "link-hackthebox", "name": "HackTheBox", "url": "https://account.hackthebox.com/login", "isPinned": false, "position": 3 }
+    ]
+  },
+  {
+    "id": "cat-ia-tools",
+    "name": "IA Tools",
+    "icon": "🤖",
+    "position": 11,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-minimax-audio", "name": "MiniMax Audio (TTS)", "url": "https://www.minimax.io/audio/text-to-speech", "isPinned": false, "position": 0 },
+      { "id": "link-hailuo-ai", "name": "Hailuo AI (Video)", "url": "https://hailuoai.video/", "isPinned": false, "position": 1 }
+    ]
+  },
+  {
+    "id": "cat-statera-livraisons",
+    "name": "Statera - Livraisons",
+    "icon": "🍖",
+    "position": 12,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-good-chop", "name": "Good Chop (Boeuf)", "url": "https://www.goodchop.com/plans", "isPinned": false, "position": 0 },
+      { "id": "link-my-butcher-box", "name": "My Butcher Box (Boeuf)", "url": "https://mybutcherbox.fr/collections/boeuf", "isPinned": false, "position": 1 },
+      { "id": "link-poiscaille", "name": "Poiscaille (Poissons)", "url": "https://poiscaille.fr/", "isPinned": false, "position": 2 }
+    ]
+  },
+  {
+    "id": "cat-sante",
+    "name": "Sante",
+    "icon": "🏥",
+    "position": 13,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-calorie-calculator", "name": "Calorie Calculator Sheet", "url": "https://docs.google.com/spreadsheets/d/1Y0UxZQSYkWx0ZraQvawlEFeX-Of9vRjWRkilNZ6-_hU/edit?gid=63625420#gid=63625420", "isPinned": false, "position": 0 },
+      { "id": "link-psychonutrition", "name": "Psychonutrition (G. Fond)", "url": "https://www.psychonutrition.co/", "isPinned": false, "position": 1 },
+      { "id": "link-eric-flag", "name": "Eric Flag (Sport)", "url": "https://programmes.ericflag.com/courses/enrolled/1213170", "isPinned": false, "position": 2 }
+    ]
+  },
+  {
+    "id": "cat-data-geovelo",
+    "name": "Data Analyse (Geovelo)",
+    "icon": "📊",
+    "position": 14,
+    "isCollapsed": false,
+    "links": [
+      { "id": "link-actions-mkt-2025", "name": "Actions MKT 2025", "url": "https://docs.google.com/spreadsheets/d/1Vjl546L31ApDN4I7xXoMuQoX_0v30Ys2UqEPW6G1g3g/edit?gid=0#gid=0", "isPinned": false, "position": 0 },
+      { "id": "link-geovelo-sheet", "name": "Geovelo Sheet", "url": "https://docs.google.com/spreadsheets/d/1g2Gq5uv7FRX5ie1kg-Mpzm1v0lMTWuz0Ula9Rgy6TTY/edit?gid=0#gid=0", "isPinned": false, "position": 1 }
+    ]
+  }
+]
