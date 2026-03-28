@@ -3,9 +3,11 @@ import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { code, state: userId } = req.query;
-  if (!code) return res.status(400).json({ error: "No code" });
+  const trimmedCode = ((code as string) || "").trim();
+  const trimmedUserId = ((userId as string) || "").trim();
+  if (!trimmedCode) return res.status(400).json({ error: "No code" });
 
-  const baseUrl = process.env.VITE_APP_URL || "https://linkou-lemon.vercel.app";
+  const baseUrl = (process.env.VITE_APP_URL || "https://linkou-lemon.vercel.app").trim();
 
   const tokenRes = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
@@ -14,9 +16,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       Accept: "application/json",
     },
     body: JSON.stringify({
-      client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
-      client_secret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
-      code: code as string,
+      client_id: (process.env.GITHUB_OAUTH_CLIENT_ID || "").trim(),
+      client_secret: (process.env.GITHUB_OAUTH_CLIENT_SECRET || "").trim(),
+      code: trimmedCode,
     }),
   });
 
@@ -24,13 +26,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (tokens.error) return res.redirect(302, `${baseUrl}/integrations?error=github`);
 
   const supabase = createClient(
-    process.env.VITE_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    (process.env.VITE_SUPABASE_URL || "").trim(),
+    (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim()
   );
 
-  if (userId) {
+  if (trimmedUserId) {
     await supabase.from("integration_tokens").upsert({
-      user_id: userId as string,
+      user_id: trimmedUserId,
       provider: "github",
       access_token: tokens.access_token,
       refresh_token: null,

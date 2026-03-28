@@ -3,16 +3,18 @@ import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { code, state: userId } = req.query;
-  if (!code) return res.status(400).json({ error: "No code" });
+  const trimmedCode = ((code as string) || "").trim();
+  const trimmedUserId = ((userId as string) || "").trim();
+  if (!trimmedCode) return res.status(400).json({ error: "No code" });
 
-  const baseUrl = process.env.VITE_APP_URL || "https://linkou-lemon.vercel.app";
+  const baseUrl = (process.env.VITE_APP_URL || "https://linkou-lemon.vercel.app").trim();
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      code: code as string,
-      client_id: process.env.GOOGLE_CLIENT_ID!,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+      code: trimmedCode,
+      client_id: (process.env.GOOGLE_CLIENT_ID || "").trim(),
+      client_secret: (process.env.GOOGLE_CLIENT_SECRET || "").trim(),
       redirect_uri: `${baseUrl}/api/auth/google-callback`,
       grant_type: "authorization_code",
     }),
@@ -20,10 +22,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const tokens = await tokenRes.json();
   if (tokens.error) return res.redirect(302, `${baseUrl}/integrations?error=google`);
 
-  const supabase = createClient(process.env.VITE_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-  if (userId) {
+  const supabase = createClient((process.env.VITE_SUPABASE_URL || "").trim(), (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim());
+  if (trimmedUserId) {
     await supabase.from("integration_tokens").upsert({
-      user_id: userId as string,
+      user_id: trimmedUserId,
       provider: "google",
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
