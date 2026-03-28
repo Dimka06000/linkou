@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
 
-async function fetchGoogleEvents(accessToken: string, date: string) {
-  const timeMin = new Date(date + "T00:00:00").toISOString();
-  const timeMax = new Date(date + "T23:59:59").toISOString();
+async function fetchGoogleEvents(accessToken: string, startDate: string, endDate: string) {
+  const timeMin = new Date(startDate + "T00:00:00").toISOString();
+  const timeMax = new Date(endDate + "T23:59:59").toISOString();
   const res = await fetch(
     `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`,
     { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -17,9 +17,9 @@ async function fetchGoogleEvents(accessToken: string, date: string) {
   }));
 }
 
-async function fetchOutlookEvents(accessToken: string, date: string) {
+async function fetchOutlookEvents(accessToken: string, startDate: string, endDate: string) {
   const res = await fetch(
-    `https://graph.microsoft.com/v1.0/me/calendarview?startDateTime=${date}T00:00:00&endDateTime=${date}T23:59:59&$orderby=start/dateTime`,
+    `https://graph.microsoft.com/v1.0/me/calendarview?startDateTime=${startDate}T00:00:00&endDateTime=${endDate}T23:59:59&$orderby=start/dateTime`,
     { headers: { Authorization: `Bearer ${accessToken}` } }
   );
   if (!res.ok) return [];
@@ -32,7 +32,11 @@ async function fetchOutlookEvents(accessToken: string, date: string) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const date = (req.query.date as string) || new Date().toISOString().split("T")[0];
+  // Support both legacy `date` param and new `startDate`/`endDate` params
+  const today = new Date().toISOString().split("T")[0];
+  const legacyDate = req.query.date as string | undefined;
+  const startDate = (req.query.startDate as string) || legacyDate || today;
+  const endDate = (req.query.endDate as string) || legacyDate || startDate;
   const userId = req.query.userId as string;
   if (!userId) return res.json([]);
 
@@ -43,8 +47,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const events: any[] = [];
   for (const token of tokens || []) {
-    if (token.provider === "google") events.push(...await fetchGoogleEvents(token.access_token, date));
-    else if (token.provider === "outlook") events.push(...await fetchOutlookEvents(token.access_token, date));
+    if (token.provider === "google") events.push(...await fetchGoogleEvents(token.access_token, startDate, endDate));
+    else if (token.provider === "outlook") events.push(...await fetchOutlookEvents(token.access_token, startDate, endDate));
   }
 
   events.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());

@@ -19,7 +19,7 @@ export function Dashboard() {
   const briefing = useBriefing();
   const { projects } = useProjects();
   const today = new Date().toISOString().split("T")[0];
-  const { events } = useCalendar(today);
+  const { events } = useCalendar(today, today);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
