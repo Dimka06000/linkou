@@ -9,6 +9,7 @@ import { SharedBoard } from "./pages/SharedBoard";
 import { LinksCategory } from "./pages/LinksCategory";
 import { Integrations } from "./pages/Integrations";
 import { Projets } from "./pages/Projets";
+import { ProjetDetail } from "./pages/ProjetDetail";
 import { Planning } from "./pages/Planning";
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
               <Route path="/links/:categoryId" element={<LinksCategory />} />
               <Route path="/integrations" element={<Integrations />} />
               <Route path="/projets" element={<Projets />} />
+              <Route path="/projets/:name" element={<ProjetDetail />} />
               <Route path="/planning" element={<Planning />} />
             </Routes>
           </AppShell>

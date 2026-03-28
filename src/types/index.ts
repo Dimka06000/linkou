@@ -51,16 +51,27 @@ export interface CalendarEvent {
   travelMode?: string;
 }
 
+export interface Commit {
+  sha: string;
+  message: string;
+  date: string;
+  author: string;
+}
+
 export interface Project {
   name: string;
   repoUrl: string;
   prodUrl: string;
   platform: "vercel" | "railway";
+  description: string;
+  language: string;
+  stars: number;
   lastCommit: {
     message: string;
     date: string;
     author: string;
   };
+  commits: Commit[];
   deployStatus: "ready" | "building" | "error" | "unknown";
   deployDate: string;
 }
