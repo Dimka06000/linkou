@@ -1,57 +1,28 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Layout } from "./components/Layout";
+import { AppShell } from "./components/AppShell";
 import { Dashboard } from "./pages/Dashboard";
 import { Stats } from "./pages/Stats";
 import { Boards } from "./pages/Boards";
 import { Settings } from "./pages/Settings";
-import { SharedBoard } from "./pages/SharedBoard";
 import { Auth } from "./pages/Auth";
+import { SharedBoard } from "./pages/SharedBoard";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <Dashboard />
-            </Layout>
-          }
-        />
-        <Route
-          path="/stats"
-          element={
-            <Layout>
-              <Stats />
-            </Layout>
-          }
-        />
-        <Route
-          path="/boards"
-          element={
-            <Layout>
-              <Boards />
-            </Layout>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <Layout>
-              <Settings />
-            </Layout>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <Layout>
-              <Auth />
-            </Layout>
-          }
-        />
         <Route path="/board/:slug" element={<SharedBoard />} />
+        <Route path="*" element={
+          <AppShell>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/stats" element={<Stats />} />
+              <Route path="/boards" element={<Boards />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/login" element={<Auth />} />
+            </Routes>
+          </AppShell>
+        } />
       </Routes>
     </BrowserRouter>
   );
