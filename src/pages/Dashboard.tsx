@@ -3,6 +3,7 @@ import type { Category, Link } from "../types";
 import { loadCategories, saveClick } from "../lib/storage";
 import { BriefingCard } from "../components/BriefingCard";
 import { useAuth } from "../hooks/useAuth";
+import { useBriefing } from "../hooks/useBriefing";
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -29,13 +30,7 @@ export function Dashboard() {
     saveClick({ linkId: link.id, clickedAt: new Date().toISOString(), device });
   }
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon apres-midi" : "Bonsoir";
-  const briefing = {
-    greeting,
-    summary: `Tu as ${pinnedLinks.length} favoris et ${categories.reduce((s, c) => s + c.links.length, 0)} liens organises en ${categories.length} categories.`,
-    events: 0,
-  };
+  const briefing = useBriefing();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
